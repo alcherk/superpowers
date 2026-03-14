@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SessionStart hook for Superpowers - Qwen Code
+# Injects instruction to load using-superpowers skill at session start
+
+set -euo pipefail
+
+# Determine script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Check if hooks are disabled
+DISABLE_FILE="$HOME/.qwen/superpowers-disabled"
+if [ -f "$DISABLE_FILE" ]; then
+    # Hooks disabled - output empty context
+    echo '{"systemMessage": "Superpowers hooks disabled"}'
+    exit 0
+fi
+
+# Read using-superpowers content
+USING_SUPERPOWERS_FILE="${REPO_DIR}/skills/using-superpowers/SKILL.md"
+if [ ! -f "$USING_SUPERPOWERS_FILE" ]; then
+    echo '{"systemMessage": "Superpowers skill not found"}'
+    exit 0
+fi
+
+using_superpowers_content=$(cat "$USING_SUPERPOWERS_FILE" 2>&1 || echo "Error reading using-superpowers skill")
+
+# Escape string for JSON embedding
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+using_superpowers_escaped=$(escape_for_json "$using_superpowers_content")
+
+# Build session context - instructs Qwen Code to load the skill
+session_context="<EXTREMELY_IMPORTANT>\nYou have Superpowers installed.\n\n**REQUIRED:** At the start of every session, you MUST:\n1. Announce: \"Superpowers skills loaded\"\n2. Load the using-superpowers skill: Use read_file to load ~/.qwen/skills/superpowers/using-superpowers/SKILL.md\n3. Follow the skill instructions exactly\n\n**Skill Location:** ~/.qwen/skills/superpowers/\n\n**Tool Mapping:** Use skills/using-superpowers/references/qwen-tools.md for Claude Code → Qwen Code tool equivalents.\n\n${using_superpowers_escaped}\n</EXTREMELY_IMPORTANT>"
+
+# Output JSON for Qwen Code hooks
+cat <<EOF
+{
+  "systemMessage": "Superpowers skills loaded. Load using-superpowers skill from ~/.qwen/skills/superpowers/using-superpowers/SKILL.md",
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "${session_context}"
+  }
+}
+EOF
+
+exit 0

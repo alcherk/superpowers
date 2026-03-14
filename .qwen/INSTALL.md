@@ -1,128 +1,171 @@
-# Superpowers for Qwen Code
+# Superpowers for Qwen Code - Installation
 
-Guide for installing and using Superpowers with Qwen Code.
+Automated installation for Superpowers skills on Qwen Code (macOS).
 
 ## Quick Install
 
-Copy the skills to your Qwen Code skills directory:
+Run this one-liner in your terminal:
 
 ```bash
-# Clone the repository
-git clone https://github.com/obra/superpowers.git ~/.qwen/superpowers
+curl -fsSL https://raw.githubusercontent.com/alcherk/superpowers/refs/heads/qwen-code/.qwen/install.sh | bash
+```
 
-# Create symlink to skills directory
+This will:
+1. Clone the Superpowers repository to `~/.qwen/superpowers`
+2. Set up the session-start hook for automatic skill loading
+3. Install slash commands (`/superpowers update`, `/superpowers status`, etc.)
+4. Create skills symlink at `~/.qwen/skills/superpowers`
+
+## What Gets Installed
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| Repository | `~/.qwen/superpowers` | Main codebase |
+| Hooks | `~/.qwen/hooks/` | Session-start injection |
+| Commands | `~/.qwen/commands/` | Slash commands |
+| Skills | `~/.qwen/skills/superpowers` | Skill library (symlink) |
+
+## Slash Commands
+
+After installation, use these commands in Qwen Code:
+
+| Command | Purpose |
+|---------|---------|
+| `/superpowers update` | Update to latest version |
+| `/superpowers status` | Show current version and status |
+| `/superpowers disable` | Temporarily disable hooks |
+| `/superpowers enable` | Re-enable hooks |
+
+## Usage
+
+### Start a Session
+
+Just start Qwen Code normally. The session-start hook will:
+1. Inject Superpowers context automatically
+2. Instruct Qwen to load the `using-superpowers` skill
+3. Skills are ready to use
+
+### Update Skills
+
+When a new version is available:
+
+```
+/superpowers update
+```
+
+Or manually:
+
+```bash
+cd ~/.qwen/superpowers && git pull
+```
+
+### Check Status
+
+```
+/superpowers status
+```
+
+Shows current version, branch, and whether you're up to date.
+
+### Disable/Enable
+
+Temporarily disable Superpowers without uninstalling:
+
+```
+/superpowers disable
+```
+
+Re-enable later:
+
+```
+/superpowers enable
+```
+
+## Manual Installation
+
+If you prefer not to use the install script:
+
+### 1. Clone Repository
+
+```bash
+git clone --branch qwen-code https://github.com/alcherk/superpowers.git ~/.qwen/superpowers
+```
+
+### 2. Create Hooks Configuration
+
+```bash
+mkdir -p ~/.qwen/hooks
+cat > ~/.qwen/hooks/hooks.json << 'EOF'
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "type": "command",
+        "command": "$HOME/.qwen/superpowers/.qwen/hooks/session-start",
+        "timeout": 8
+      }
+    ]
+  }
+}
+EOF
+```
+
+### 3. Create Skills Symlink
+
+```bash
+mkdir -p ~/.qwen/skills
 ln -s ~/.qwen/superpowers/skills ~/.qwen/skills/superpowers
 ```
 
-Or manually copy the skills:
+### 4. Install Slash Commands
 
 ```bash
-# Create skills directory if it doesn't exist
-mkdir -p ~/.qwen/skills
-
-# Copy all skills
-cp -r /path/to/superpowers/skills/* ~/.qwen/skills/
+mkdir -p ~/.qwen/commands
+ln -s ~/.qwen/superpowers/.qwen/commands/update.md ~/.qwen/commands/superpowers-update.md
+ln -s ~/.qwen/superpowers/.qwen/commands/status.md ~/.qwen/commands/superpowers-status.md
+ln -s ~/.qwen/superpowers/.qwen/commands/disable.md ~/.qwen/commands/superpowers-disable.md
+ln -s ~/.qwen/superpowers/.qwen/commands/enable.md ~/.qwen/commands/superpowers-enable.md
 ```
 
-## How Skills Work
-
-Skills are stored in `~/.qwen/skills/<skill-name>/SKILL.md`. When you want to use a skill:
-
-1. **Announce**: "Using [skill-name] to [purpose]"
-2. **Load**: Read the skill file with `read_file` tool
-3. **Follow**: Execute the skill instructions exactly
-
-## Tool Mapping
-
-Superpowers skills use Claude Code tool names. Use these Qwen Code equivalents:
-
-| Skill references | Qwen Code equivalent |
-|-----------------|----------------------|
-| `Read` | `read_file` |
-| `Write` | `write_file` |
-| `Edit` | `edit` |
-| `Bash` | `run_shell_command` |
-| `Grep` | `grep_search` |
-| `Glob` | `glob` |
-| `TodoWrite` | `todo_write` |
-| `Task` (subagent) | `task` with `subagent_type: "general-purpose"` |
-| `WebSearch` | `web_search` |
-| `WebFetch` | `web_fetch` |
-| `ListDirectory` | `list_directory` |
-
-## Subagent Support
-
-Qwen Code supports subagents via the `task` tool. Example:
-
-```typescript
-task({
-  description: "Review spec compliance",
-  subagent_type: "general-purpose",
-  prompt: "Review the implementation against the spec document at..."
-});
-```
-
-Skills like `subagent-driven-development` and `dispatching-parallel-agents` work natively with Qwen Code.
-
-## Available Skills
-
-### Core Workflow
-- **brainstorming** - Design refinement before coding
-- **writing-plans** - Implementation planning
-- **subagent-driven-development** - Execute with subagents + review
-- **finishing-a-development-branch** - Complete and merge work
-
-### Quality
-- **test-driven-development** - RED-GREEN-REFACTOR cycle
-- **systematic-debugging** - Root cause analysis
-- **verification-before-completion** - Ensure fixes work
-- **requesting-code-review** - Pre-review checklist
-
-### Collaboration
-- **receiving-code-review** - Respond to feedback
-- **using-git-worktrees** - Isolated branches
-- **dispatching-parallel-agents** - Concurrent subagents
-
-### Meta
-- **writing-skills** - Create new skills
-- **using-superpowers** - System introduction
-
-## Usage Example
-
-```
-User: Help me add a new feature to my project
-
-Assistant: I'll use the brainstorming skill to refine the design before we start coding.
-
-[Uses read_file to load ~/.qwen/skills/brainstorming/SKILL.md]
-
-Following the brainstorming skill, let me first understand your current project context...
-```
-
-## Updating Skills
-
-To update to the latest version:
+## Uninstalling
 
 ```bash
-cd ~/.qwen/superpowers
-git pull origin main
+# Remove repository
+rm -rf ~/.qwen/superpowers
+
+# Remove hooks
+rm -rf ~/.qwen/hooks
+
+# Remove skills symlink
+rm -f ~/.qwen/skills/superpowers
+
+# Remove slash commands
+rm -f ~/.qwen/commands/superpowers-*.md
+
+# Remove disable flag (if exists)
+rm -f ~/.qwen/superpowers-disabled
 ```
-
-## Custom Skills
-
-You can create your own skills in `~/.qwen/skills/my-custom-skill/SKILL.md`.
-
-Follow the `writing-skills` skill for the proper methodology.
 
 ## Troubleshooting
 
-**Skill not found:** Ensure the skill file exists at `~/.qwen/skills/<skill-name>/SKILL.md`
+### Hooks not working
 
-**Subagent not working:** Verify Qwen Code has the `task` tool available
+1. Check hooks.json exists: `cat ~/.qwen/hooks/hooks.json`
+2. Check session-start is executable: `ls -la ~/.qwen/superpowers/.qwen/hooks/session-start`
+3. Restart Qwen Code
 
-**Server issues:** For brainstorming visual companion, ensure the server script is executable
+### Skills not found
+
+1. Check symlink: `ls -la ~/.qwen/skills/superpowers`
+2. Should point to: `~/.qwen/superpowers/skills`
+
+### Slash commands not working
+
+1. Check commands exist: `ls ~/.qwen/commands/superpowers-*.md`
+2. Check scripts symlink: `ls -la ~/.qwen/commands/superpowers-scripts`
 
 ## Support
 
-- **Issues:** https://github.com/obra/superpowers/issues
-- **Documentation:** https://github.com/obra/superpowers/tree/main/docs
+- **Issues:** https://github.com/alcherk/superpowers/issues
+- **Documentation:** https://github.com/alcherk/superpowers/tree/qwen-code
