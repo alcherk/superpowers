@@ -26,7 +26,7 @@ Thanks!
 
 ## Installation
 
-**Note:** Installation differs by platform. Claude Code or Cursor have built-in plugin marketplaces. Codex and OpenCode require manual setup.
+**Note:** Installation differs by platform. Claude Code or Cursor have built-in plugin marketplaces. Codex, OpenCode, and Qwen Code require manual setup.
 
 ### Claude Code Official Marketplace
 
@@ -93,6 +93,20 @@ To update:
 ```bash
 gemini extensions update superpowers
 ```
+
+### Qwen Code
+
+Manual installation required:
+
+```bash
+# Clone the repository
+git clone https://github.com/obra/superpowers.git ~/.qwen/superpowers
+
+# Create symlink to skills directory
+ln -s ~/.qwen/superpowers/skills ~/.qwen/skills/superpowers
+```
+
+**Detailed docs:** [.qwen/INSTALL.md](.qwen/INSTALL.md)
 
 ### Verify Installation
 

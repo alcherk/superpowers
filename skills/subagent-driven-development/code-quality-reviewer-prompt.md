@@ -6,6 +6,7 @@ Use this template when dispatching a code quality reviewer subagent.
 
 **Only dispatch after spec compliance review passes.**
 
+**Claude Code / Qwen Code:**
 ```
 Task tool (superpowers:code-reviewer):
   Use template at requesting-code-review/code-reviewer.md
@@ -15,6 +16,11 @@ Task tool (superpowers:code-reviewer):
   BASE_SHA: [commit before task]
   HEAD_SHA: [current commit]
   DESCRIPTION: [task summary]
+```
+
+**Codex:**
+```
+spawn_agent with code-reviewer template from requesting-code-review/code-reviewer.md
 ```
 
 **In addition to standard code quality concerns, the reviewer should check:**

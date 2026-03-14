@@ -65,12 +65,34 @@ Each agent gets:
 
 ### 3. Dispatch in Parallel
 
+**Claude Code / Qwen Code:**
 ```typescript
-// In Claude Code / AI environment
-Task("Fix agent-tool-abort.test.ts failures")
-Task("Fix batch-completion-behavior.test.ts failures")
-Task("Fix tool-approval-race-conditions.test.ts failures")
+// Use the task tool for each independent problem
+task({
+  description: "Fix agent-tool-abort.test.ts failures",
+  subagent_type: "general-purpose",
+  prompt: "Fix the 3 failing tests in src/agents/agent-tool-abort.test.ts..."
+});
+task({
+  description: "Fix batch-completion-behavior.test.ts failures", 
+  subagent_type: "general-purpose",
+  prompt: "Fix the 2 failing tests in src/agents/batch-completion-behavior.test.ts..."
+});
+task({
+  description: "Fix tool-approval-race-conditions.test.ts failures",
+  subagent_type: "general-purpose",
+  prompt: "Fix the failing test in src/agents/tool-approval-race-conditions.test.ts..."
+});
 // All three run concurrently
+```
+
+**Codex:**
+```typescript
+// Use spawn_agent for each task
+spawn_agent("Fix agent-tool-abort.test.ts failures...");
+spawn_agent("Fix batch-completion-behavior.test.ts failures...");
+spawn_agent("Fix tool-approval-race-conditions.test.ts failures...");
+// Wait for all to complete
 ```
 
 ### 4. Review and Integrate

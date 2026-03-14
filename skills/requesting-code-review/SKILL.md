@@ -31,7 +31,19 @@ HEAD_SHA=$(git rev-parse HEAD)
 
 **2. Dispatch code-reviewer subagent:**
 
-Use Task tool with superpowers:code-reviewer type, fill template at `code-reviewer.md`
+**Claude Code / Qwen Code:**
+```typescript
+task({
+  description: "Code review: [feature name]",
+  subagent_type: "superpowers:code-reviewer",
+  prompt: `Review the implementation... [use template from code-reviewer.md]`
+})
+```
+
+**Codex:**
+```typescript
+spawn_agent("Code review: [feature name]", prompt: `Review the implementation...`)
+```
 
 **Placeholders:**
 - `{WHAT_WAS_IMPLEMENTED}` - What you just built
@@ -56,7 +68,12 @@ You: Let me request code review before proceeding.
 BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
 HEAD_SHA=$(git rev-parse HEAD)
 
-[Dispatch superpowers:code-reviewer subagent]
+[Dispatch code-reviewer subagent]
+task({
+  description: "Code review: verification functions",
+  subagent_type: "superpowers:code-reviewer",
+  prompt: `Review the implementation...`
+})
   WHAT_WAS_IMPLEMENTED: Verification and repair functions for conversation index
   PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md
   BASE_SHA: a7981ec

@@ -6,45 +6,60 @@ Use this template when dispatching a spec document reviewer subagent.
 
 **Dispatch after:** Spec document is written to docs/superpowers/specs/
 
+**Claude Code / Qwen Code:**
+```typescript
+task({
+  description: "Review spec document",
+  subagent_type: "general-purpose",
+  prompt: `You are a spec document reviewer. Verify this spec is complete and ready for planning...`
+})
 ```
-Task tool (general-purpose):
-  description: "Review spec document"
-  prompt: |
-    You are a spec document reviewer. Verify this spec is complete and ready for planning.
 
-    **Spec to review:** [SPEC_FILE_PATH]
+**Codex:**
+```typescript
+spawn_agent("Review spec document", prompt: `You are a spec document reviewer...`)
+```
 
-    ## What to Check
+---
 
-    | Category | What to Look For |
-    |----------|------------------|
-    | Completeness | TODOs, placeholders, "TBD", incomplete sections |
-    | Coverage | Missing error handling, edge cases, integration points |
-    | Consistency | Internal contradictions, conflicting requirements |
-    | Clarity | Ambiguous requirements |
-    | YAGNI | Unrequested features, over-engineering |
-    | Scope | Focused enough for a single plan — not covering multiple independent subsystems |
-    | Architecture | Units with clear boundaries, well-defined interfaces, independently understandable and testable |
+## Full Prompt to Use
 
-    ## CRITICAL
+```
+You are a spec document reviewer. Verify this spec is complete and ready for planning.
 
-    Look especially hard for:
-    - Any TODO markers or placeholder text
-    - Sections saying "to be defined later" or "will spec when X is done"
-    - Sections noticeably less detailed than others
-    - Units that lack clear boundaries or interfaces — can you understand what each unit does without reading its internals?
+**Spec to review:** [SPEC_FILE_PATH]
 
-    ## Output Format
+## What to Check
 
-    ## Spec Review
+| Category | What to Look For |
+|----------|------------------|
+| Completeness | TODOs, placeholders, "TBD", incomplete sections |
+| Coverage | Missing error handling, edge cases, integration points |
+| Consistency | Internal contradictions, conflicting requirements |
+| Clarity | Ambiguous requirements |
+| YAGNI | Unrequested features, over-engineering |
+| Scope | Focused enough for a single plan — not covering multiple independent subsystems |
+| Architecture | Units with clear boundaries, well-defined interfaces, independently understandable and testable |
 
-    **Status:** ✅ Approved | ❌ Issues Found
+## CRITICAL
 
-    **Issues (if any):**
-    - [Section X]: [specific issue] - [why it matters]
+Look especially hard for:
+- Any TODO markers or placeholder text
+- Sections saying "to be defined later" or "will spec when X is done"
+- Sections noticeably less detailed than others
+- Units that lack clear boundaries or interfaces — can you understand what each unit does without reading its internals?
 
-    **Recommendations (advisory):**
-    - [suggestions that don't block approval]
+## Output Format
+
+## Spec Review
+
+**Status:** ✅ Approved | ❌ Issues Found
+
+**Issues (if any):**
+- [Section X]: [specific issue] - [why it matters]
+
+**Recommendations (advisory):**
+- [suggestions that don't block approval]
 ```
 
 **Reviewer returns:** Status, Issues (if any), Recommendations

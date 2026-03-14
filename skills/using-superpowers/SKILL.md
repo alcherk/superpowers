@@ -31,11 +31,13 @@ If CLAUDE.md, GEMINI.md, or AGENTS.md says "don't use TDD" and a skill says "alw
 
 **In Gemini CLI:** Skills activate via the `activate_skill` tool. Gemini loads skill metadata at session start and activates the full content on demand.
 
+**In Qwen Code:** Skills are loaded from `~/.qwen/skills/<skill-name>/SKILL.md`. Use the `read_file` tool to load a skill, then follow its instructions directly. Announce when you're using a skill: "Using [skill] to [purpose]".
+
 **In other environments:** Check your platform's documentation for how skills are loaded.
 
 ## Platform Adaptation
 
-Skills use Claude Code tool names. Non-CC platforms: see `references/codex-tools.md` (Codex) for tool equivalents. Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.
+Skills use Claude Code tool names. Non-CC platforms: see `references/codex-tools.md` (Codex), `references/gemini-tools.md` (Gemini CLI), or `references/qwen-tools.md` (Qwen Code) for tool equivalents.
 
 # Using Skills
 
