@@ -4,9 +4,9 @@
 
 set -euo pipefail
 
-# Determine script directory
+# Determine script directory and repo root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+REPO_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 # Check if hooks are disabled
 DISABLE_FILE="$HOME/.qwen/superpowers-disabled"
